@@ -1,0 +1,137 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Pragon Settings</title>
+<style>
+:root{--cyan:#00d4ff;--bg:#0a0a0f;--text:#e8eaf0;--muted:rgba(200,210,230,.45);--green:#33ffb0;--red:#ef4444}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+body{padding:calc(14px + env(safe-area-inset-top,0px)) 16px 30px}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.top b{flex:1;font:900 16px Orbitron,sans-serif;letter-spacing:2px;color:var(--cyan);text-shadow:0 0 16px rgba(0,212,255,.4)}
+.back{background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.25);color:var(--cyan);border-radius:10px;padding:8px 14px;font-size:12px;letter-spacing:1px;cursor:pointer}
+.st{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:16px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--red)}.dot.ok{background:var(--green);box-shadow:0 0 8px var(--green)}
+h3{font:700 11px Orbitron,sans-serif;letter-spacing:2px;color:var(--cyan);margin:22px 0 8px}
+.card{background:rgba(255,255,255,.03);border:1px solid rgba(0,212,255,.15);border-radius:14px;padding:12px}
+input{width:100%;padding:11px 13px;margin-bottom:8px;background:rgba(255,255,255,.03);border:1.5px solid rgba(0,212,255,.15);border-radius:12px;color:var(--text);font-size:14px;outline:none}
+input:focus{border-color:var(--cyan)}
+.btn{width:100%;padding:12px;border-radius:12px;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.3);color:var(--cyan);font:700 11px Orbitron,sans-serif;letter-spacing:2px;cursor:pointer}
+.btn:active{background:rgba(0,212,255,.25)}.btn.red{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.4);color:var(--red)}
+.or{text-align:center;color:var(--muted);font-size:11px;margin:10px 0}
+.perm{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(0,212,255,.08)}.perm:last-child{border:0}
+.perm span{flex:1;font-size:13px}.pill{font:700 10px Orbitron,sans-serif;letter-spacing:1px;padding:4px 9px;border-radius:20px;background:rgba(239,68,68,.12);color:var(--red)}.pill.on{background:rgba(51,255,176,.12);color:var(--green)}
+.perm .btn{width:auto;padding:8px 12px;font-size:10px}
+
+.seg{display:flex;gap:6px;margin-bottom:10px}.seg button{flex:1;padding:10px 4px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(0,212,255,.15);color:var(--muted);font:700 10px Orbitron,sans-serif;letter-spacing:1px;cursor:pointer}
+.seg button small{font:400 10px sans-serif;letter-spacing:0;opacity:.8}.seg button.on{background:rgba(0,212,255,.15);border-color:var(--cyan);color:var(--cyan)}
+.hint{font-size:11px;color:var(--muted);margin:2px 0 10px;line-height:1.45}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.chips span{padding:5px 10px;border-radius:20px;border:1px solid rgba(0,212,255,.25);color:var(--cyan);font-size:12px;cursor:pointer}
+</style></head><body>
+<div class="top"><b>SETTINGS</b><button class="back" onclick="N.close()">← BACK</button></div>
+<div class="st"><span class="dot" id="dot"></span><span id="stt">Not paired yet</span></div>
+
+<h3>CONNECT TO PC</h3>
+<div class="card">
+  <button class="btn" onclick="N.scanQr()">SCAN QR FROM PRAGON</button>
+  <div class="or">— or enter it manually —</div>
+  <input id="host" placeholder="PC address, e.g. 192.168.1.2:8000" autocomplete="off">
+  <input id="key" placeholder="Pairing key shown under the QR" autocomplete="off" autocapitalize="characters">
+  <button class="btn" onclick="N.connect(host.value.trim(),key.value.trim())">CONNECT</button>
+</div>
+
+<h3>AI ENGINE (STANDALONE)</h3>
+<div class="card">
+  <div class="seg"><button id="e_gemini" onclick="pickEng('gemini')">GEMINI<br><small>online</small></button><button id="e_ollama" onclick="pickEng('ollama')">OLLAMA<br><small>offline</small></button><button id="e_openai" onclick="pickEng('openai')">CUSTOM<br><small>any server</small></button></div>
+  <div id="box_ollama" style="display:none">
+    <div class="hint">Ollama runs on your PC (or Termux). On the PC set <b>OLLAMA_HOST=0.0.0.0</b> so the phone can reach it, then use the PC's address here, e.g. 192.168.1.2:11434.</div>
+    <input id="ohost" placeholder="Ollama address, e.g. 192.168.1.2:11434" autocomplete="off" autocapitalize="none">
+    <input id="omodel" list="mlist" placeholder="Model, e.g. hermes3" autocomplete="off" autocapitalize="none">
+    <datalist id="mlist"></datalist>
+    <div class="chips"><span onclick="setModel('hermes3')">hermes3</span><span onclick="setModel('llama3.2')">llama3.2</span><span onclick="setModel('qwen2.5')">qwen2.5</span><span onclick="setModel('gemma3')">gemma3</span><span onclick="setModel('phi4-mini')">phi4-mini</span></div>
+    <button class="btn" onclick="refreshModels()">LIST INSTALLED MODELS</button>
+    <div style="height:8px"></div>
+    <input id="pullname" placeholder="Model to download, e.g. hermes3 or hf.co/user/repo" autocomplete="off" autocapitalize="none">
+    <button class="btn" onclick="doPull()">PULL (DOWNLOAD) MODEL</button>
+    <div class="hint" id="pullst"></div>
+  </div>
+  <div id="box_openai" style="display:none">
+    <div class="hint">Works with any OpenAI-compatible server: LM Studio, llama.cpp server, vLLM, OpenRouter, an OpenClaw gateway and more. Use the address up to <b>/v1</b>.</div>
+    <input id="cbase" placeholder="Base URL, e.g. http://192.168.1.2:1234/v1" autocomplete="off" autocapitalize="none">
+    <input id="ckey" type="password" placeholder="API key (leave empty if not needed)" autocomplete="off">
+    <input id="cmodel" list="mlist" placeholder="Model name the server uses" autocomplete="off" autocapitalize="none">
+    <button class="btn" onclick="refreshModels()">LIST MODELS FROM SERVER</button>
+    <div class="hint" id="keyst"></div>
+  </div>
+  <div class="hint" id="modelst"></div>
+  <div style="height:8px"></div>
+  <button class="btn" onclick="saveEng()">SAVE ENGINE</button>
+  <div class="or" style="margin:10px 0 0">You can also switch engines from the chip at the top of the chat screen. Offline engines need a server on your Wi-Fi (or Termux on this phone).</div>
+</div>
+
+<h3>GEMINI (ONLINE)</h3>
+<div class="card">
+  <div class="st" style="margin-bottom:10px"><span class="dot" id="aidot"></span><span id="aist">No key yet</span></div>
+  <input id="aikey" type="password" placeholder="Your Gemini API key (optional if a PC is paired)" autocomplete="off">
+  <input id="aimodel" placeholder="Model (default gemini-2.5-flash)" autocomplete="off">
+  <button class="btn" onclick="N.saveAi(aikey.value.trim(),aimodel.value.trim());aikey.value='';setTimeout(pmAi,200)">SAVE</button>
+  <div style="height:8px"></div>
+  <button class="btn red" onclick="N.clearAiKey();setTimeout(pmAi,200)">REMOVE MY KEY</button>
+  <div class="or" style="margin:10px 0 0">Your key is used first. If empty, the app uses the key from your paired PC.</div>
+</div>
+
+<h3>FLOAT MODE (VOICE BUBBLE)</h3>
+<div class="card">
+  <div class="hint" style="margin:0">Tap the round <b>float button</b> next to the mic on the chat screen. A small bubble hovers over every app and listens. It also starts by itself whenever you open an app through Pragon.<br><br>
+  <b>"I'm home"</b> or <b>"Daddy's home"</b> (with or without "Pragon") - start listening (bubble turns cyan)<br>
+  <b>"open Instagram"</b>, <b>"close YouTube"</b>, <b>"search YouTube for lofi"</b>, <b>"go home"</b>, <b>"volume up"</b>, <b>"scroll down"</b><br>
+  <b>"Mute"</b> - microphone fully off (tap the bubble to turn it back on)<br>
+  <b>"Goodbye"</b> - closes float mode<br><br>
+  Bubble: tap = listening on/off, drag = move, long-press = close. Needs the microphone, "Display over other apps", and the accessibility service (for closing apps).</div>
+</div>
+
+<h3>PERMISSIONS (needed once)</h3>
+<div class="card">
+  <div class="perm"><span>Accessibility service</span><i class="pill" id="p1">OFF</i><button class="btn" onclick="N.openA11y()">ENABLE</button></div>
+  <div class="perm"><span>Display over other apps</span><i class="pill" id="p2">OFF</i><button class="btn" onclick="N.openOverlay()">ALLOW</button></div>
+  <div class="perm"><span>Battery: don't restrict</span><i class="pill" id="p3">OFF</i><button class="btn" onclick="N.openBattery()">ALLOW</button></div>
+</div>
+
+<h3>DANGER ZONE</h3>
+<button class="btn red" id="fg" onclick="fgTap()">DISCONNECT AND FORGET THIS PC</button>
+
+<script>
+// Bridge: the Android app provides window.PragonNative; in a browser this mock lets you preview the page.
+const N=window.PragonNative||{
+  getState:()=>JSON.stringify({paired:true,host:'192.168.1.2:8000',status:'Connected to Pragon on your PC',a11y:true,overlay:false,battery:true}),
+  scanQr(){alert('(app) opens the QR scanner')},connect(h,k){alert('(app) pair with '+h+' key '+k)},
+  openA11y(){alert('(app) opens Accessibility settings')},openOverlay(){alert('(app) opens overlay permission')},openBattery(){alert('(app) opens battery permission')},
+  getAi:()=>JSON.stringify({own:false,pc:true,model:'gemini-2.5-flash',hint:''}),saveAi(k,m){alert('(app) saves AI settings')},clearAiKey(){alert('(app) removes key')},
+  getEngine:()=>JSON.stringify({engine:'gemini',ollamaHost:'http://192.168.1.2:11434',ollamaModel:'hermes3',openaiBase:'http://127.0.0.1:8080/v1',openaiModel:'',openaiKeySet:false}),
+  saveEngine(){alert('(app) saves engine')},clearEngineKey(){},listModels(){setTimeout(()=>pmModels({models:['hermes3:latest','llama3.2:latest'],error:''}),300)},pullModel(h,m){pmPull('pulling manifest',false);setTimeout(()=>pmPull('Done - '+m+' is ready.',true),800)},
+  forget(){alert('(app) forgets this PC')},close(){history.length>1?history.back():window.close()}
+};
+window.pmRefresh=function(){const s=JSON.parse(N.getState());
+  document.getElementById('dot').classList.toggle('ok',s.paired);document.getElementById('stt').textContent=s.status||(s.paired?'Paired':'Not paired yet');
+  if(s.host&&!host.value)host.value=s.host;
+  [['p1',s.a11y],['p2',s.overlay],['p3',s.battery]].forEach(([i,v])=>{const e=document.getElementById(i);e.textContent=v?'ON':'OFF';e.classList.toggle('on',!!v);});};
+let fgArm=0;function fgTap(){const b=document.getElementById('fg');if(fgArm){fgArm=0;b.textContent='DISCONNECT AND FORGET THIS PC';N.forget();return;}fgArm=1;b.textContent='TAP AGAIN TO CONFIRM';setTimeout(()=>{fgArm=0;b.textContent='DISCONNECT AND FORGET THIS PC';},3000);}
+let aiInit=false;
+window.pmAi=function(){const a=JSON.parse(N.getAi());
+  document.getElementById('aidot').classList.toggle('ok',a.own||a.pc);
+  document.getElementById('aist').textContent=a.own?('Using your key '+a.hint):(a.pc?"Using your PC's key":'No key yet - add yours or pair a PC');
+  if(!aiInit){aiInit=true;document.getElementById('aimodel').value=a.model;}};
+let eng='gemini';
+function pickEng(e){eng=e;['gemini','ollama','openai'].forEach(x=>document.getElementById('e_'+x).classList.toggle('on',x===e));
+  document.getElementById('box_ollama').style.display=e==='ollama'?'block':'none';
+  document.getElementById('box_openai').style.display=e==='openai'?'block':'none';}
+function setModel(m){(eng==='openai'?cmodel:omodel).value=m;}
+function saveEng(){N.saveEngine(eng,ohost.value.trim(),omodel.value.trim(),cbase.value.trim(),ckey.value.trim(),cmodel.value.trim());ckey.value='';setTimeout(loadEng,300);}
+function refreshModels(){document.getElementById('modelst').textContent='Looking for models...';N.listModels(eng,ohost.value.trim(),cbase.value.trim(),ckey.value.trim());}
+window.pmModels=function(r){const st=document.getElementById('modelst');
+  if(r.error){st.textContent='Could not reach the server: '+r.error+'. Check the address and that it is running on the same Wi-Fi.';return;}
+  const dl=document.getElementById('mlist');dl.innerHTML='';r.models.forEach(m=>{const o=document.createElement('option');o.value=m;dl.appendChild(o);});
+  st.textContent=r.models.length?('Installed: '+r.models.join(', ')+'. Tap the model box to choose.'):'Connected, but no models yet. Pull one below.';};
+function doPull(){const n=pullname.value.trim()||omodel.value.trim();if(!n)return;document.getElementById('pullst').textContent='Starting...';N.pullModel(ohost.value.trim(),n);}
+window.pmPull=function(t,done){document.getElementById('pullst').textContent=t;if(done&&t.startsWith('Done'))refreshModels();};
+function loadEng(){const e=JSON.parse(N.getEngine());ohost.value=e.ollamaHost;omodel.value=e.ollamaModel;cbase.value=e.openaiBase;cmodel.value=e.openaiModel;
+  document.getElementById('keyst').textContent=e.openaiKeySet?'An API key is saved.':'';pickEng(e.engine);}
+loadEng();
+pmRefresh();pmAi();setInterval(pmRefresh,1500);
+</script></body></html>

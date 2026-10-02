@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">PragonMobile</string>
+    <string name="a11y_desc">Lets your own Pragon PC press Home/Back, tap, swipe and type on this phone when you give it a voice command.</string>
+</resources>

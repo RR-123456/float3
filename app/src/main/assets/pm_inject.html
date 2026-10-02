@@ -1,0 +1,32 @@
+<button class="pm-b" id="pmType" title="Type on PC (not sent to Pragon)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></svg></button>
+<button class="pm-b" id="pmRemote" title="Remote"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="2" width="10" height="20" rx="5"/><path d="M12 6v4M9 15h.01M15 15h.01M12 18h.01"/></svg></button>
+<div class="pm-br"></div>
+
+<div class="pm-ov" id="pmOv"></div>
+<div class="pm-sheet" id="pmSheet">
+  <div class="pm-h"><b>REMOTE · PC</b><button class="pm-x" id="pmClose">×</button></div>
+  <div class="pm-g">
+    <div class="pm-k" data-fn="openCamera"><i>📷</i>Camera</div>
+    <div class="pm-k" data-fn="openDraw"><i>✏️</i>Draw</div>
+    <div class="pm-k" data-a="mouse_click"><i>🖱</i>Click</div>
+    <div class="pm-k" data-a="mouse_right_click"><i>◧</i>Right</div>
+    <div class="pm-k" data-a="previous"><i>⏮</i>Back</div>
+    <div class="pm-k" data-a="next"><i>⏭</i>Next</div>
+    <div class="pm-k" data-a="play_pause"><i>⏯</i>Pause</div>
+    <div class="pm-k" data-a="scroll_up"><i>⤒</i>Swipe up</div>
+    <div class="pm-k" data-a="scroll_down"><i>⤓</i>Swipe down</div>
+    <div class="pm-k" data-a="mute"><i>🔇</i>Mute</div>
+    <div class="pm-k" data-a="volume_down"><i>🔉</i>Vol −</div>
+    <div class="pm-k" data-a="volume_up"><i>🔊</i>Vol +</div>
+    <div class="pm-k" data-a="brightness_down"><i>🔅</i>Bright −</div>
+    <div class="pm-k" data-a="brightness_up"><i>🔆</i>Bright +</div>
+    <div class="pm-k red" data-a="lock"><i>🔒</i>Lock</div>
+    <div class="pm-k" data-a="wake"><i>⚡</i>Wake</div>
+  </div>
+  <div class="pm-row"><input id="pmTxt" placeholder="Type text to the PC…" autocomplete="off"><button class="pm-btn" data-a="key_backspace">⌫</button><button class="pm-btn" data-a="key_enter">↵</button><button class="pm-btn" id="pmTxtGo">TYPE</button></div>
+  <div class="pm-js">
+    <div id="pmPad"><div id="pmKnob"></div></div>
+    <div class="pm-cl"><div class="pm-k" data-a="mouse_click"><i>🖱</i>Left click</div><div class="pm-k" data-a="mouse_right_click"><i>◧</i>Right click</div></div>
+  </div>
+</div>
+<div class="pm-toast" id="pmToast"></div>
